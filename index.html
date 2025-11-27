@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolyWave Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+</head>
+<body class="bg-[#0a0a0a] text-neutral-200 font-sans selection:bg-white/20 pb-20">
+
+    <!-- Header -->
+    <header class="p-4 border-b border-neutral-800 bg-[#0f0f0f] flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-3 h-3 bg-white rounded-full shadow-[0_0_10px_white]"></div>
+            <div>
+                <h1 class="text-xl font-bold tracking-[0.2em] text-white uppercase">PolyWave Studio</h1>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <!-- Performance Mode -->
+            <div class="flex bg-neutral-900 rounded border border-neutral-800 p-0.5" id="perf-mode-container">
+                 <button data-mode="HQ" class="perf-btn text-[10px] font-bold px-3 py-1 rounded transition-colors uppercase tracking-wider bg-white text-black">HQ</button>
+                 <button data-mode="Eco" class="perf-btn text-[10px] font-bold px-3 py-1 rounded transition-colors uppercase tracking-wider text-neutral-500 hover:text-white">ECO (Pi)</button>
+            </div>
+
+            <!-- Presets -->
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Preset</span>
+                <select id="preset-select" class="bg-neutral-900 text-white text-xs font-bold border border-neutral-700 rounded px-2 py-1 outline-none uppercase tracking-wide focus:border-white">
+                    <option value="Custom">Custom</option>
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
+
+            <!-- Hold Button -->
+            <button id="hold-btn" class="px-4 py-1 rounded font-bold text-[10px] uppercase tracking-[0.15em] transition-all border bg-transparent border-neutral-700 text-neutral-500 hover:border-neutral-500 hover:text-neutral-300">
+                Hold [OFF]
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 lg:p-8 space-y-6">
+        
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            
+            <!-- 1. OSCILLATOR -->
+            <div class="md:col-span-3 bg-[#111] rounded border border-neutral-800 p-6 flex flex-col items-center">
+                <h2 class="text-xs font-bold text-neutral-500 mb-6 tracking-[0.2em] uppercase w-full text-center border-b border-neutral-800 pb-2">Oscillator</h2>
+                <div class="w-full space-y-8">
+                    <div class="w-full">
+                        <select id="osc-type" class="w-full bg-[#0a0a0a] border border-neutral-700 text-white text-xs font-mono uppercase rounded p-2 outline-none text-center">
+                            <option value="sine">Sine</option>
+                            <option value="square">Square</option>
+                            <option value="sawtooth">Sawtooth</option>
+                            <option value="triangle">Triangle</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="knob-container" data-param="oscillator.detune" data-min="-100" data-max="100" data-label="Detune"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. FILTER & LFO -->
+            <div class="md:col-span-5 bg-[#111] rounded border border-neutral-800 p-6">
+                <h2 class="text-xs font-bold text-neutral-500 mb-6 tracking-[0.2em] uppercase w-full text-center border-b border-neutral-800 pb-2">Filter & LFO</h2>
+                <div class="flex gap-6 justify-center mb-8">
+                     <div class="w-24 flex flex-col justify-end">
+                        <select id="filter-type" class="w-full bg-[#0a0a0a] border border-neutral-700 text-white text-[10px] uppercase rounded p-1 outline-none font-mono">
+                            <option value="lowpass">LPF</option>
+                            <option value="highpass">HPF</option>
+                            <option value="bandpass">BPF</option>
+                        </select>
+                     </div>
+                     <div class="knob-container" data-param="filter.cutoff" data-min="20" data-max="10000" data-step="10" data-label="Cutoff"></div>
+                     <div class="knob-container" data-param="filter.resonance" data-min="0" data-max="20" data-label="Res"></div>
+                     <div class="knob-container" data-param="filter.envAmount" data-min="0" data-max="5000" data-step="10" data-label="Env Amt"></div>
+                </div>
+                
+                <div class="border-t border-neutral-800 pt-6 flex gap-8 justify-center items-center">
+                    <div class="flex flex-col gap-2">
+                         <span class="text-[10px] text-neutral-600 font-bold uppercase tracking-wider text-center">Target</span>
+                         <div class="flex flex-col gap-1" id="lfo-target-container">
+                             <button data-value="pitch" class="lfo-target-btn text-[9px] px-2 py-0.5 rounded uppercase tracking-wider font-bold border border-neutral-800 text-neutral-500">pitch</button>
+                             <button data-value="cutoff" class="lfo-target-btn text-[9px] px-2 py-0.5 rounded uppercase tracking-wider font-bold border bg-white text-black border-white">cutoff</button>
+                             <button data-value="amp" class="lfo-target-btn text-[9px] px-2 py-0.5 rounded uppercase tracking-wider font-bold border border-neutral-800 text-neutral-500">amp</button>
+                         </div>
+                    </div>
+                    <div class="knob-container" data-param="lfo.rate" data-min="0" data-max="20" data-step="0.1" data-label="Rate"></div>
+                    <div class="knob-container" data-param="lfo.depth" data-min="0" data-max="100" data-label="Depth"></div>
+                </div>
+            </div>
+
+            <!-- 3. ENVELOPE -->
+            <div class="md:col-span-4 bg-[#111] rounded border border-neutral-800 p-6">
+                <h2 class="text-xs font-bold text-neutral-500 mb-6 tracking-[0.2em] uppercase w-full text-center border-b border-neutral-800 pb-2">Envelope</h2>
+                <div class="flex justify-between items-center h-48 px-4">
+                    <div class="slider-vertical-container" data-param="envelope.attack" data-min="0.01" data-max="2" data-label="ATK"></div>
+                    <div class="slider-vertical-container" data-param="envelope.decay" data-min="0.1" data-max="2" data-label="DEC"></div>
+                    <div class="slider-vertical-container" data-param="envelope.sustain" data-min="0" data-max="1" data-label="SUS"></div>
+                    <div class="slider-vertical-container" data-param="envelope.release" data-min="0.1" data-max="5" data-label="REL"></div>
+                </div>
+            </div>
+
+            <!-- 4. GRANULAR FX -->
+            <div class="md:col-span-6 bg-[#111] rounded border border-neutral-800 p-6">
+                <div class="flex justify-between items-center mb-6 border-b border-neutral-800 pb-2">
+                     <h2 class="text-xs font-bold text-neutral-500 tracking-[0.2em] uppercase">Granular Cloud</h2>
+                     <button id="granular-toggle" class="text-[9px] px-2 py-0.5 border rounded uppercase font-bold tracking-wider bg-transparent text-neutral-600 border-neutral-800">
+                         BYPASS
+                     </button>
+                </div>
+                <div class="flex justify-around items-center">
+                    <div class="knob-container" data-param="granular.mix" data-min="0" data-max="1" data-step="0.01" data-label="Mix"></div>
+                    <div class="knob-container" data-param="granular.grainSize" data-min="0.01" data-max="0.5" data-step="0.01" data-label="Size"></div>
+                    <div class="knob-container" data-param="granular.density" data-min="0" data-max="1" data-step="0.01" data-label="Density"></div>
+                    <div class="knob-container" data-param="granular.spread" data-min="0" data-max="1" data-step="0.01" data-label="Spread"></div>
+                    <div class="knob-container" data-param="granular.feedback" data-min="0" data-max="0.95" data-step="0.01" data-label="F.Back"></div>
+                </div>
+            </div>
+
+            <!-- 5. DELAY FX -->
+            <div class="md:col-span-6 bg-[#111] rounded border border-neutral-800 p-6">
+                <div class="flex justify-between items-center mb-6 border-b border-neutral-800 pb-2">
+                     <h2 class="text-xs font-bold text-neutral-500 tracking-[0.2em] uppercase">Quantized Delay</h2>
+                     <button id="delay-toggle" class="text-[9px] px-2 py-0.5 border rounded uppercase font-bold tracking-wider bg-transparent text-neutral-600 border-neutral-800">
+                         BYPASS
+                     </button>
+                </div>
+                <div class="flex flex-col gap-6">
+                     <div class="flex gap-4 justify-center">
+                        <select id="delay-root" class="bg-[#0a0a0a] text-neutral-300 text-[10px] font-bold rounded p-1 outline-none border border-neutral-700 w-16 text-center">
+                            <!-- Keys JS -->
+                        </select>
+                         <select id="delay-scale" class="bg-[#0a0a0a] text-neutral-300 text-[10px] font-bold rounded p-1 outline-none border border-neutral-700 w-24 text-center">
+                             <!-- Scales JS -->
+                        </select>
+                     </div>
+                     <div class="flex justify-around items-center">
+                        <div class="knob-container" data-param="delay.time" data-min="0.01" data-max="1.5" data-step="0.01" data-label="Time"></div>
+                        <div class="knob-container" data-param="delay.feedback" data-min="0" data-max="0.95" data-step="0.01" data-label="F.Back"></div>
+                        <div class="knob-container" data-param="delay.pitchRandom" data-min="0" data-max="1" data-step="0.01" data-label="Rand"></div>
+                        <div class="knob-container" data-param="delay.mix" data-min="0" data-max="1" data-step="0.01" data-label="Mix"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. MASTER FX -->
+            <div class="md:col-span-12 bg-[#111] rounded border border-neutral-800 p-6">
+                <h2 class="text-xs font-bold text-neutral-500 mb-6 tracking-[0.2em] uppercase w-full text-center border-b border-neutral-800 pb-2">Master Chain</h2>
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="flex items-center justify-center gap-4" id="reverb-type-container">
+                        <button data-type="off" class="rev-btn text-[10px] px-4 py-2 rounded uppercase font-bold tracking-widest border transition-all bg-transparent text-neutral-600 border-neutral-800">off</button>
+                        <button data-type="hall" class="rev-btn text-[10px] px-4 py-2 rounded uppercase font-bold tracking-widest border transition-all bg-white text-black border-white">hall</button>
+                        <button data-type="shimmer" class="rev-btn text-[10px] px-4 py-2 rounded uppercase font-bold tracking-widest border transition-all bg-transparent text-neutral-600 border-neutral-800">shimmer</button>
+                    </div>
+                    <div class="flex justify-center items-center gap-12">
+                        <div class="knob-container" data-param="master.reverbMix" data-min="0" data-max="1" data-step="0.01" data-label="Reverb"></div>
+                        <div class="w-px h-12 bg-neutral-800"></div>
+                        <div class="knob-container" data-param="master.gain" data-min="0" data-max="1" data-step="0.01" data-label="Volume"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. UTILITY RACK (Live Input & Recorder) -->
+            <div class="md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- LIVE INPUT -->
+                <div class="bg-[#111] rounded border border-neutral-800 p-4 flex flex-col gap-4">
+                    <div class="flex justify-between items-center border-b border-neutral-800 pb-2">
+                        <h2 class="text-xs font-bold text-neutral-500 tracking-[0.2em] uppercase">Live Input</h2>
+                        <div id="input-active-led" class="w-2 h-2 rounded-full bg-neutral-800"></div>
+                    </div>
+                    <!-- Visualizer Canvas -->
+                    <div id="visualizer-container" class="relative h-24 w-full bg-neutral-900 rounded border border-neutral-800 cursor-pointer overflow-hidden group">
+                        <canvas id="visualizer" width="400" height="96" class="w-full h-full"></canvas>
+                        <div id="viz-mode-label" class="absolute top-2 right-2 text-[9px] font-bold text-neutral-600 bg-black/50 px-2 py-0.5 rounded pointer-events-none group-hover:text-white transition-colors uppercase tracking-wider">spectrum</div>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <button id="activate-input-btn" class="w-full py-1.5 rounded font-bold text-[10px] uppercase tracking-widest transition-all border bg-transparent text-neutral-500 border-neutral-700 hover:border-neutral-500 hover:text-white">Activate Input</button>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[9px] text-neutral-500 font-bold uppercase tracking-wider">
+                            <span>Input Gain</span>
+                            <span id="input-gain-display" class="text-neutral-300">50%</span>
+                        </div>
+                        <input id="input-gain-slider" type="range" min="0" max="2" step="0.01" value="0.5" class="w-full h-1 bg-neutral-800 rounded appearance-none cursor-pointer">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[9px] text-neutral-500 font-bold uppercase tracking-wider">Route to FX</span>
+                        <button id="input-fx-toggle" class="w-8 h-4 rounded-full relative transition-colors border border-neutral-700 bg-white border-white">
+                            <div class="absolute top-0.5 w-2.5 h-2.5 rounded-full transition-all left-4.5 bg-black"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RECORDER -->
+                <div class="bg-[#111] rounded border border-neutral-800 p-4 flex flex-col gap-4">
+                    <div class="flex justify-between items-center border-b border-neutral-800 pb-2">
+                         <h2 class="text-xs font-bold text-neutral-500 tracking-[0.2em] uppercase">Tape Recorder</h2>
+                         <span id="rec-status" class="font-mono text-xs font-bold text-neutral-600">0:00</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="rec-btn" class="py-2 rounded border text-[10px] font-bold uppercase tracking-wider transition-all bg-transparent text-neutral-500 border-neutral-700 hover:text-white hover:border-neutral-500">Rec</button>
+                        <button id="play-btn" disabled class="py-2 rounded border text-[10px] font-bold uppercase tracking-wider transition-all bg-transparent text-neutral-500 border-neutral-700 disabled:opacity-30">Play</button>
+                        <button id="clear-btn" disabled class="bg-transparent border border-neutral-700 text-neutral-500 hover:text-white hover:border-neutral-500 py-2 rounded text-[10px] font-bold uppercase tracking-wider disabled:opacity-30">Clear</button>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[9px] text-neutral-500 font-bold uppercase tracking-wider">Loop Playback</span>
+                        <button id="loop-toggle" class="w-8 h-4 rounded-full relative transition-colors border border-neutral-700 bg-transparent">
+                            <div class="absolute top-0.5 w-2.5 h-2.5 rounded-full transition-all left-0.5 bg-neutral-600"></div>
+                        </button>
+                    </div>
+                    <!-- WAVEFORM CANVAS -->
+                    <div class="relative w-full h-16 bg-neutral-900 rounded border border-neutral-800 overflow-hidden">
+                        <canvas id="tape-canvas" width="300" height="64" class="w-full h-full"></canvas>
+                        <div id="tape-loaded-msg" class="hidden absolute inset-0 flex items-center justify-center text-[9px] text-neutral-400 uppercase tracking-widest bg-black/30 pointer-events-none">
+                            Tape Loaded
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Keyboard Container -->
+        <div class="pt-4 relative h-48 w-full max-w-4xl mx-auto select-none bg-[#111] p-2 rounded border border-neutral-800">
+            <div id="keyboard-container" class="relative flex h-full w-full justify-center">
+                <!-- Keys generated by JS -->
+            </div>
+        </div>
+
+    </main>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "Stand-Alone - Browser - DrewPolySynth",
+  "description": "A fully functional polyphonic synthesizer with subtractive synthesis, ADSR, filters, and algorithmic reverb effects.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

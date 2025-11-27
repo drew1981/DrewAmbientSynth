@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Range Slider Styles - Minimalist/Stealth */
+input[type=range] {
+    -webkit-appearance: none;
+    background: #262626; 
+}
+
+/* The Thumb */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    margin-top: -4px; 
+    box-shadow: 0 0 5px rgba(255,255,255,0.5);
+    border: 2px solid #000;
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #262626;
+    border-radius: 2px;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+/* Knob Logic */
+.knob-svg {
+    transform: rotate(90deg); /* Start at bottom */
+}
